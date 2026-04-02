@@ -1,0 +1,192 @@
+{
+  "dashboard": {
+    "uid": "49cacd94-efbf-4211-bd1d-8a92b190aaf0",
+    "title": "n8n Sensor Monitoring Dashboard",
+    "refresh": "5s",
+    "time": {"from": "now-30m", "to": "now"},
+    "schemaVersion": 38,
+    "tags": ["n8n", "sensor", "mysql"],
+    "panels": [
+      {
+        "id": 1, "type": "stat", "title": "Latest Temperature",
+        "gridPos": {"x": 0, "y": 0, "w": 4, "h": 4},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "area", "textMode": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue","value": null},{"color": "green","value": 20},{"color": "yellow","value": 35},{"color": "red","value": 42}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, temperature AS value FROM sensor_data ORDER BY recorded_at DESC LIMIT 1", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 2, "type": "stat", "title": "Latest Humidity",
+        "gridPos": {"x": 4, "y": 0, "w": 4, "h": 4},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "area", "textMode": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red","value": null},{"color": "yellow","value": 30},{"color": "green","value": 40},{"color": "blue","value": 75}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, humidity AS value FROM sensor_data ORDER BY recorded_at DESC LIMIT 1", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 3, "type": "stat", "title": "Total Records",
+        "gridPos": {"x": 8, "y": 0, "w": 4, "h": 4},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "area", "textMode": "auto", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "short",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "purple","value": null}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, COUNT(*) AS value FROM sensor_data", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 4, "type": "stat", "title": "Avg Temperature (30m)",
+        "gridPos": {"x": 12, "y": 0, "w": 4, "h": 4},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green","value": null},{"color": "orange","value": 32},{"color": "red","value": 40}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, ROUND(AVG(temperature),1) AS value FROM sensor_data WHERE recorded_at >= NOW() - INTERVAL 30 MINUTE", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 5, "type": "stat", "title": "Avg Humidity (30m)",
+        "gridPos": {"x": 16, "y": 0, "w": 4, "h": 4},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red","value": null},{"color": "green","value": 40},{"color": "blue","value": 75}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, ROUND(AVG(humidity),1) AS value FROM sensor_data WHERE recorded_at >= NOW() - INTERVAL 30 MINUTE", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 6, "type": "stat", "title": "Active Locations",
+        "gridPos": {"x": 20, "y": 0, "w": 4, "h": 4},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "short",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "teal","value": null}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, COUNT(DISTINCT location) AS value FROM sensor_data", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 7, "type": "gauge", "title": "Temperature Gauge",
+        "gridPos": {"x": 0, "y": 4, "w": 6, "h": 8},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "showThresholdLabels": true, "showThresholdMarkers": true},
+        "fieldConfig": {"defaults": {"min": 0, "max": 60, "unit": "celsius",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue","value": null},{"color": "green","value": 15},{"color": "yellow","value": 30},{"color": "orange","value": 38},{"color": "red","value": 45}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, temperature AS value FROM sensor_data ORDER BY recorded_at DESC LIMIT 1", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 8, "type": "gauge", "title": "Humidity Gauge",
+        "gridPos": {"x": 6, "y": 4, "w": 6, "h": 8},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"reduceOptions": {"calcs": ["lastNotNull"]}, "showThresholdLabels": true, "showThresholdMarkers": true},
+        "fieldConfig": {"defaults": {"min": 0, "max": 100, "unit": "percent",
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red","value": null},{"color": "yellow","value": 25},{"color": "green","value": 40},{"color": "blue","value": 70},{"color": "purple","value": 85}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, humidity AS value FROM sensor_data ORDER BY recorded_at DESC LIMIT 1", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 9, "type": "piechart", "title": "Records by Location",
+        "gridPos": {"x": 12, "y": 4, "w": 6, "h": 8},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"pieType": "donut", "displayLabels": ["name","percent"], "legend": {"displayMode": "table", "placement": "right", "values": ["value","percent"]}},
+        "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "palette-classic"}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT location AS metric, NOW() AS time, COUNT(*) AS value FROM sensor_data GROUP BY location", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 10, "type": "bargauge", "title": "Avg Temp by Location",
+        "gridPos": {"x": 18, "y": 4, "w": 6, "h": 8},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"]}, "displayMode": "gradient"},
+        "fieldConfig": {"defaults": {"unit": "celsius", "min": 0, "max": 60,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue","value": null},{"color": "green","value": 20},{"color": "yellow","value": 35},{"color": "red","value": 42}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT location AS metric, NOW() AS time, ROUND(AVG(temperature),1) AS value FROM sensor_data GROUP BY location", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 11, "type": "timeseries", "title": "Temperature Over Time (by Location)",
+        "gridPos": {"x": 0, "y": 12, "w": 24, "h": 9},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "table", "placement": "right", "calcs": ["min","max","mean","last"]}},
+        "fieldConfig": {"defaults": {"unit": "celsius", "custom": {"lineWidth": 2, "fillOpacity": 10, "gradientMode": "opacity"}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, temperature AS value, location AS metric FROM sensor_data WHERE $__timeFilter(recorded_at) ORDER BY recorded_at ASC", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 12, "type": "timeseries", "title": "Humidity Over Time (by Location)",
+        "gridPos": {"x": 0, "y": 21, "w": 24, "h": 9},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "table", "placement": "right", "calcs": ["min","max","mean","last"]}},
+        "fieldConfig": {"defaults": {"unit": "percent", "custom": {"lineWidth": 2, "fillOpacity": 10, "gradientMode": "opacity"}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, humidity AS value, location AS metric FROM sensor_data WHERE $__timeFilter(recorded_at) ORDER BY recorded_at ASC", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 13, "type": "timeseries", "title": "Temperature vs Humidity (Combined)",
+        "gridPos": {"x": 0, "y": 30, "w": 24, "h": 9},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"tooltip": {"mode": "multi"}, "legend": {"displayMode": "list", "placement": "bottom"}},
+        "fieldConfig": {
+          "defaults": {"custom": {"lineWidth": 2, "fillOpacity": 5}},
+          "overrides": [
+            {"matcher": {"id": "byName", "options": "temperature"}, "properties": [{"id": "unit", "value": "celsius"}, {"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}}, {"id": "custom.axisPlacement", "value": "left"}]},
+            {"matcher": {"id": "byName", "options": "humidity"}, "properties": [{"id": "unit", "value": "percent"}, {"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}}, {"id": "custom.axisPlacement", "value": "right"}]}
+          ]
+        },
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS time, AVG(temperature) AS temperature, AVG(humidity) AS humidity FROM sensor_data WHERE $__timeFilter(recorded_at) GROUP BY recorded_at ORDER BY recorded_at ASC", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 14, "type": "bargauge", "title": "Avg Humidity by Location",
+        "gridPos": {"x": 0, "y": 39, "w": 8, "h": 7},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"]}, "displayMode": "lcd"},
+        "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red","value": null},{"color": "green","value": 40},{"color": "blue","value": 75}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT location AS metric, NOW() AS time, ROUND(AVG(humidity),1) AS value FROM sensor_data GROUP BY location", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 15, "type": "stat", "title": "Max Temperature",
+        "gridPos": {"x": 8, "y": 39, "w": 4, "h": 3},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "orange","value": null},{"color": "red","value": 40}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, ROUND(MAX(temperature),1) AS value FROM sensor_data WHERE recorded_at >= NOW() - INTERVAL 30 MINUTE", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 16, "type": "stat", "title": "Min Temperature",
+        "gridPos": {"x": 8, "y": 42, "w": 4, "h": 3},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue","value": null},{"color": "green","value": 20}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, ROUND(MIN(temperature),1) AS value FROM sensor_data WHERE recorded_at >= NOW() - INTERVAL 30 MINUTE", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 17, "type": "stat", "title": "Max Humidity",
+        "gridPos": {"x": 12, "y": 39, "w": 4, "h": 3},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue","value": null}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, ROUND(MAX(humidity),1) AS value FROM sensor_data WHERE recorded_at >= NOW() - INTERVAL 30 MINUTE", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 18, "type": "stat", "title": "Min Humidity",
+        "gridPos": {"x": 12, "y": 42, "w": 4, "h": 3},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}},
+        "fieldConfig": {"defaults": {"unit": "percent", "decimals": 1,
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red","value": null},{"color": "green","value": 40}]}}},
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT NOW() AS time, ROUND(MIN(humidity),1) AS value FROM sensor_data WHERE recorded_at >= NOW() - INTERVAL 30 MINUTE", "format": "time_series", "refId": "A"}]
+      },
+      {
+        "id": 19, "type": "table", "title": "Recent Sensor Data (Latest 30)",
+        "gridPos": {"x": 0, "y": 46, "w": 24, "h": 9},
+        "datasource": {"type": "mysql", "uid": "dfhurk0ufyadca"},
+        "options": {"sortBy": [{"displayName": "Time", "desc": true}]},
+        "fieldConfig": {
+          "defaults": {"custom": {"align": "center"}},
+          "overrides": [
+            {"matcher": {"id": "byName", "options": "Temperature"}, "properties": [{"id": "unit", "value": "celsius"}, {"id": "custom.displayMode", "value": "color-background"}, {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "blue","value": null},{"color": "green","value": 20},{"color": "yellow","value": 35},{"color": "red","value": 42}]}}]},
+            {"matcher": {"id": "byName", "options": "Humidity"}, "properties": [{"id": "unit", "value": "percent"}, {"id": "custom.displayMode", "value": "color-background"}, {"id": "thresholds", "value": {"mode": "absolute", "steps": [{"color": "red","value": null},{"color": "green","value": 40},{"color": "blue","value": 75}]}}]}
+          ]
+        },
+        "targets": [{"datasource": {"type":"mysql","uid":"dfhurk0ufyadca"}, "rawSql": "SELECT recorded_at AS Time, location AS Location, temperature AS Temperature, humidity AS Humidity FROM sensor_data ORDER BY recorded_at DESC LIMIT 30", "format": "table", "refId": "A"}]
+      }
+    ]
+  },
+  "overwrite": true,
+  "folderId": 0
+}
