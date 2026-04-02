@@ -1,0 +1,12 @@
+GitHub Repository Information
+==============================
+Student ID : 2101070
+Name       : 이정인
+
+Repository URL : https://github.com/2101070-LJI/n8n
+Branch         : main
+
+Description:
+  n8n + MySQL 연동을 Docker 및 Docker Compose로 구현한 프로젝트
+  - docker-compose.yml : n8n 및 MySQL 8.0 서비스 정의
+  - init.sql           : MySQL 초기화 스크립트
