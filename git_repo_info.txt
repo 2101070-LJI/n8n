@@ -7,6 +7,21 @@ Repository URL : https://github.com/2101070-LJI/n8n
 Branch         : main
 
 Description:
-  n8n + MySQL 연동을 Docker 및 Docker Compose로 구현한 프로젝트
-  - docker-compose.yml : n8n 및 MySQL 8.0 서비스 정의
-  - init.sql           : MySQL 초기화 스크립트
+  n8n + MySQL + Grafana 연동을 Docker 및 Docker Compose로 구현한 프로젝트
+
+  [Services]
+  - mysql    : MySQL 8.0 데이터베이스 (port 3306)
+  - n8n      : 워크플로우 자동화 도구 (port 5678)
+               10초마다 온도/습도 난수 데이터를 MySQL에 자동 저장
+  - grafana  : 실시간 모니터링 대시보드 (port 3001)
+               MySQL 데이터를 시각화 (19개 패널)
+
+  [Access]
+  - n8n     : http://localhost:5678
+  - Grafana : http://localhost:3001  (admin / admin)
+
+  [Files]
+  - docker-compose.yml                         : 3개 서비스 통합 정의
+  - init.sql                                   : MySQL 초기화 스크립트
+  - grafana/provisioning/datasources/          : Grafana MySQL 데이터소스 자동 설정
+  - grafana/provisioning/dashboards/           : Grafana 대시보드 자동 로드
